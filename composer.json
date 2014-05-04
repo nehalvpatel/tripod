@@ -1,0 +1,32 @@
+{
+    "name": "nehalvpatel/Tripod",
+    "description": "Tripod is a podcast library handler.",
+    "keywords": ["podcasts", "library"],
+    "homepage": "https://github.com/nehalvpatel/Tripod",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nehal Patel",
+            "email": "nehal@itspatel.com",
+            "homepage": "http://www.itspatel.com",
+            "role": "Developer"
+        }
+    ],
+
+    "minimum-stability": "stable",
+
+    "require": {
+        "php": ">=5.5.0"
+    },
+
+    "require-dev": {
+        "squizlabs/php_codesniffer": "1.*"
+    },
+
+    "autoload": {
+        "psr-0": {
+            "Tripod\\": "src/"
+        }
+    }
+}
