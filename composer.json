@@ -1,8 +1,8 @@
 {
-    "name": "nehalvpatel/Tripod",
+    "name": "nehalvpatel/tripod",
     "description": "Tripod is a podcast library handler.",
     "keywords": ["podcasts", "library"],
-    "homepage": "https://github.com/nehalvpatel/Tripod",
+    "homepage": "https://github.com/nehalvpatel/tripod",
     "type": "library",
     "license": "MIT",
     "authors": [
