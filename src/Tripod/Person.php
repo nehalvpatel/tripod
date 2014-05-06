@@ -33,7 +33,7 @@ class Person
     
     public function reloadData($person_id = "")
     {
-        if (empty($person_id)) {
+        if ($person_id === "") {
             $person_id = $this->getID();
         }
         

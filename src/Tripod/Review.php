@@ -33,7 +33,7 @@ class Review
     
     public function reloadData($review_id = "")
     {
-        if (empty($review_id)) {
+        if ($review_id === "") {
             $review_id = $this->getID();
         }
         

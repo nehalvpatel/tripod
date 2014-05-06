@@ -33,7 +33,7 @@ class Author
     
     public function reloadData($author_id = "")
     {
-        if (empty($author_id)) {
+        if ($author_id === "") {
             $author_id = $this->getID();
         }
         

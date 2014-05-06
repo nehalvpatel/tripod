@@ -34,7 +34,7 @@ class Episode
     
     public function reloadData($episode_id = "")
     {
-        if (empty($episode_id)) {
+        if ($episode_id === "") {
             $episode_id = $this->getIdentifier();
         }
         
@@ -299,7 +299,37 @@ class Episode
     
     public function getTimestamps()
     {
-        return $this->_getValue("Timestamps");
+        $timestamps = $this->_getValue("Timestamps");
+        
+        $timeline_array = array();
+        if (count($timestamps) > 0) {
+            // We now find the end time value for each timestamp and add it to the timestamp's array element.
+            foreach ($timestamps as $timestamp) {
+                $timeline_array[] = $timestamp;
+                
+                // Set the previous array element's finishing time to the currents starting time.
+                if (isset($timeline_array[count($timeline_array) - 2])) {
+                    $timeline_array[count($timeline_array) - 2]->setEnd($timestamp->getTimestamp());
+                }
+            }
+            
+            // The last timestamp ends when the episode ends.
+            $timeline_array[count($timeline_array) - 1]->setEnd($this->getYouTubeLength());
+            
+            // We now find the length of each timestamp as a percentage of the full episode length.
+            foreach ($timeline_array as $timeline_key => $timeline_element) {
+                // Find size of timeline element.
+                $timeline_element_size = $timeline_element->getEnd() - $timeline_element->getBegin();
+                
+                // Express the timeline size as a quotent of the full current episode size. The * 1.01 gives us some visual spacing to avoid timeline glitches.
+                $timeline_element_quotent = $timeline_element_size / ($this->getYouTubeLength() * 1.01);
+                
+                // Multiply by 100 to express in percentage form and put the value into the $timeline_array array.
+                $timeline_array[$timeline_key]->setWidth($timeline_element_quotent * 100);
+            }
+        }
+        
+        return $timeline_array;
     }
     
     public function addTimestamp($timestamp, $value, $url = "", $special = null)

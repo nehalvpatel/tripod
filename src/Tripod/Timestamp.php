@@ -11,6 +11,10 @@ class Timestamp
     private $_init_id;
     private $_data;
     
+    // etc
+    private $_end;
+    private $_width;
+    
     public function __construct($initiator, $connection)
     {
         $this->_connection = $connection;
@@ -33,7 +37,7 @@ class Timestamp
     
     public function reloadData($timestamp_id = "")
     {
-        if (empty($timestamp_id)) {
+        if ($timestamp_id === "") {
             $timestamp_id = $this->getID();
         }
         
@@ -106,6 +110,16 @@ class Timestamp
         return $this->_setValue("Timestamp", $timestamp);
     }
     
+    public function getTime()
+    {
+        $init = $this->getTimestamp();
+        $hours = floor($init / 3600);
+        $minutes = floor(($init / 60) % 60);
+        $seconds = $init % 60;
+        
+        return sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+    }
+    
     public function getValue()
     {
         return $this->_getValue("Value");
@@ -124,6 +138,31 @@ class Timestamp
     public function setURL($url)
     {
         return $this->_setValue("URL", $url);
+    }
+    
+    public function getBegin()
+    {
+        return $this->getTimestamp();
+    }
+    
+    public function getEnd()
+    {
+        return $this->_end;
+    }
+    
+    public function setEnd($end)
+    {
+        $this->_end = $end;
+    }
+    
+    public function getWidth()
+    {
+        return $this->_width;
+    }
+    
+    public function setWidth($width)
+    {
+        $this->_width = $width;
     }
     
     public function __toString()
