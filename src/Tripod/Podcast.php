@@ -131,6 +131,11 @@ class Podcast
         $episodes_query->execute();
         $episodes_results = $episodes_query->fetchAll();
         
+        $people = array();
+        foreach ($this->getPeople() as $person) {
+            $people[$person->getID()] = $person;
+        }
+        
         $timestamps_query = $this->_connection->prepare("SELECT * FROM `timestamps` ORDER BY `ID` ASC, `Timestamp` ASC");
         $timestamps_query->execute();
         $timestamps_results = $timestamps_query->fetchAll();
@@ -151,6 +156,24 @@ class Podcast
         
         $episodes = array();
         foreach ($episodes_results as $episode) {
+            $hosts = json_decode($episode["Hosts"], true);
+            $episode["Hosts"] = array();
+            foreach ($hosts as $host) {
+                $episode["Hosts"][] = $people[$host];
+            }
+            
+            $guests = json_decode($episode["Guests"], true);
+            $episode["Guests"] = array();
+            foreach ($guests as $guest) {
+                $episode["Guests"][] = $people[$guest];
+            }
+            
+            $sponsors = json_decode($episode["Sponsors"], true);
+            $episode["Sponsors"] = array();
+            foreach ($sponsors as $sponsor) {
+                $episode["Sponsors"][] = $people[$sponsor];
+            }
+            
             if (isset($timelines[$episode["Identifier"]])) {
                 $episode["Timestamps"] = $timelines[$episode["Identifier"]];
             } else {

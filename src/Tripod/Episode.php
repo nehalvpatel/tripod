@@ -48,6 +48,35 @@ class Episode
         $episode_results = $episode_query->fetchAll();
         
         if (count($episode_results) > 0) {
+            $hosts_list = json_decode($episode_results[0]["Hosts"], true);
+            $episode_results[0]["Hosts"] = array();
+            $guests_list = json_decode($episode_results[0]["Guests"], true);
+            $episode_results[0]["Guests"] = array();
+            $sponsors_list = json_decode($episode_results[0]["Sponsors"], true);
+            $episode_results[0]["Sponsors"] = array();
+            
+            $people_list = array_unique(array_merge($hosts_list, $guests_list, $sponsors_list));
+            $placeholders = rtrim(str_repeat("?, ", count($people_list)), ", ");
+            $people_query = $this->_connection->prepare("SELECT * FROM `people` WHERE `ID` IN ($placeholders) ORDER BY `ID` ASC");
+            $people_query->execute($people_list);
+            $people_results = $people_query->fetchAll();
+            
+            foreach ($people_results as $person_data) {
+                $person = new Person($person_data, $this->_connection);
+                
+                if (in_array($person->getID(), $hosts_list)) {
+                    $episode_results[0]["Hosts"][] = $person;
+                }
+                
+                if (in_array($person->getID(), $guests_list)) {
+                    $episode_results[0]["Guests"][] = $person;
+                }
+                
+                if (in_array($person->getID(), $sponsors_list)) {
+                    $episode_results[0]["Sponsors"][] = $person;
+                }
+            }
+            
             $timeline_query = $this->_connection->prepare("SELECT * FROM `timestamps` WHERE `Episode` = :Identifier ORDER BY `Timestamp` ASC");
             $timeline_query->bindValue(":Identifier", $episode_id, \PDO::PARAM_STR);
             $timeline_query->execute();
@@ -130,19 +159,7 @@ class Episode
     
     public function getHosts()
     {
-        $hosts_list = json_decode($this->_getValue("Hosts"), true);
-        
-        $placeholders = rtrim(str_repeat("?, ", count($hosts_list)), ", ");
-        $people_query = $this->_connection->prepare("SELECT * FROM `people` WHERE `ID` IN ($placeholders) ORDER BY `ID` ASC");
-        $people_query->execute($hosts_list);
-        $people_results = $people_query->fetchAll();
-        
-        $hosts = array();
-        foreach ($people_results as $person) {
-            $hosts[] = new Person($person, $this->_connection);
-        }
-        
-        return $hosts;
+        return $this->_getValue("Hosts");
     }
     
     public function setHosts(array $hosts)
@@ -157,19 +174,7 @@ class Episode
     
     public function getGuests()
     {
-        $guests_list = json_decode($this->_getValue("Guests"), true);
-        
-        $placeholders = rtrim(str_repeat("?, ", count($guests_list)), ", ");
-        $people_query = $this->_connection->prepare("SELECT * FROM `people` WHERE `ID` IN ($placeholders) ORDER BY `ID` ASC");
-        $people_query->execute($guests_list);
-        $people_results = $people_query->fetchAll();
-        
-        $guests = array();
-        foreach ($people_results as $person) {
-            $guests[] = new Person($person, $this->_connection);
-        }
-        
-        return $guests;
+        return $this->_getValue("Guests");
     }
     
     public function setGuests(array $guests)
@@ -184,19 +189,7 @@ class Episode
     
     public function getSponsors()
     {
-        $sponsors_list = json_decode($this->_getValue("Sponsors"), true);
-        
-        $placeholders = rtrim(str_repeat("?, ", count($sponsors_list)), ", ");
-        $people_query = $this->_connection->prepare("SELECT * FROM `people` WHERE `ID` IN ($placeholders) ORDER BY `ID` ASC");
-        $people_query->execute($sponsors_list);
-        $people_results = $people_query->fetchAll();
-        
-        $sponsors = array();
-        foreach ($people_results as $person) {
-            $sponsors[] = new Person($person, $this->_connection);
-        }
-        
-        return $sponsors;
+        return $this->_getValue("Sponsors");
     }
     
     public function setSponsors(array $sponsors)
