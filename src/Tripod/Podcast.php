@@ -136,7 +136,7 @@ class Podcast
             $people[$person->getID()] = $person;
         }
         
-        $timestamps_query = $this->_connection->prepare("SELECT * FROM `timestamps` ORDER BY `ID` ASC, `Timestamp` ASC");
+        $timestamps_query = $this->_connection->prepare("SELECT * FROM `timestamps` ORDER BY `Timestamp` ASC");
         $timestamps_query->execute();
         $timestamps_results = $timestamps_query->fetchAll();
         
