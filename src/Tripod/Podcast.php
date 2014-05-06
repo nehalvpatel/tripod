@@ -205,4 +205,33 @@ class Podcast
         
         return $people;
     }
+    
+    public function getSearchResults($query)
+    {
+        $search_results = array();
+        if (!empty($query)) {
+            $search_query = $this->_connection->prepare("SELECT `Episode`, `Timestamp`, `Value` FROM `timestamps` WHERE REPLACE(`Value`, :Replace, '') LIKE :Value");
+            $search_query->bindValue(":Replace", "'");
+            $search_query->bindValue(":Value", "%" . str_replace("'", "", trim($query) . "%"));
+            $search_query->execute();
+
+            foreach ($search_query->fetchAll() as $result) {
+                $timestamp_data = array();
+                $timestamp_data["Timestamp"] = $result["Timestamp"];
+                $timestamp_data["Value"] = $result["Value"];
+                $timestamp_data["HMS"] = Utilities::convertToHMS($result["Timestamp"]);
+                
+                $search_results[$result["Episode"]][] = $timestamp_data;
+            }
+        } else {
+            $search_query = $this->_connection->prepare("SELECT * FROM `episodes`");
+            $search_query->execute();
+
+            foreach ($search_query->fetchAll() as $result) {
+                $search_results[] = $result["Identifier"];
+            }
+        }
+
+        return $search_results;
+    }
 }

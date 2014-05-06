@@ -73,4 +73,13 @@ class Utilities
         sscanf($timestamp, "%d:%d:%d", $hours, $minutes, $seconds);
         return isset($seconds) ? $hours * 3600 + $minutes * 60 + $seconds : $hours * 60 + $minutes;
     }
+    
+    public static function convertToHMS($timestamp)
+    {
+        $hours = floor($timestamp / 3600);
+        $minutes = floor(($timestamp / 60) % 60);
+        $seconds = $timestamp % 60;
+        
+        return sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+    }
 }

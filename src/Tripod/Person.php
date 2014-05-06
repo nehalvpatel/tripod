@@ -263,13 +263,8 @@ class Person
                 $youtube_video["Link"] = $video_result["link"][0]["href"];
                 $youtube_video["Comments"] = $video_result["gd\$comments"]["gd\$feedLink"]["countHint"];
                 $youtube_video["Thumbnail"] = $video_result["media\$group"]["media\$thumbnail"][0]["url"];
+                $youtube_video["Duration"] = Utilities::convertToHMS($video_result["media\$group"]["yt\$duration"]["seconds"]);
                 
-                $init = $video_result["media\$group"]["yt\$duration"]["seconds"];
-                $hours = floor($init / 3600);
-                $minutes = floor(($init / 60) % 60);
-                $seconds = $init % 60;
-                $youtube_video["Duration"] = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
-                    
                 $youtube_videos[] = $youtube_video;
             }
             

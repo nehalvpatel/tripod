@@ -112,12 +112,7 @@ class Timestamp
     
     public function getTime()
     {
-        $init = $this->getTimestamp();
-        $hours = floor($init / 3600);
-        $minutes = floor(($init / 60) % 60);
-        $seconds = $init % 60;
-        
-        return sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+        return Utilities::convertToHMS($this->getTimestamp());
     }
     
     public function getValue()
