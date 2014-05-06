@@ -273,7 +273,11 @@ class Episode
     
     public function getTimelineAuthor()
     {
-        return new Author($this->_getValue("TimelineAuthor"), $this->_connection);
+        if ($this->_getValue("TimelineAuthor") != "0") {
+            return new Author($this->_getValue("TimelineAuthor"), $this->_connection);
+        } else {
+            return false;
+        }
     }
     
     public function setTimelineAuthor(Author $timelineauthor)
