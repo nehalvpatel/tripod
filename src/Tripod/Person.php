@@ -261,7 +261,13 @@ class Person
                 $youtube_video = array();
                 $youtube_video["Title"] = $video_result["title"]["\$t"];
                 $youtube_video["Link"] = $video_result["link"][0]["href"];
-                $youtube_video["Comments"] = $video_result["gd\$comments"]["gd\$feedLink"]["countHint"];
+                
+                if (isset($video_result["gd\$comments"])) {
+                    $youtube_video["Comments"] = $video_result["gd\$comments"]["gd\$feedLink"]["countHint"];
+                } else {
+                    $youtube_video["Comments"] = "0";
+                }
+                
                 $youtube_video["Thumbnail"] = $video_result["media\$group"]["media\$thumbnail"][0]["url"];
                 $youtube_video["Duration"] = Utilities::convertToHMS($video_result["media\$group"]["yt\$duration"]["seconds"]);
                 
