@@ -261,25 +261,29 @@ class Person
             } else {
                 $youtube_json = json_decode($youtube_results, true);
                 
-                $youtube_videos = array();
-                foreach ($youtube_json["feed"]["entry"] as $video_result) {
-                    $youtube_video = array();
-                    $youtube_video["Title"] = $video_result["title"]["\$t"];
-                    $youtube_video["Link"] = $video_result["link"][0]["href"];
-                    
-                    if (isset($video_result["gd\$comments"])) {
-                        $youtube_video["Comments"] = $video_result["gd\$comments"]["gd\$feedLink"]["countHint"];
-                    } else {
-                        $youtube_video["Comments"] = "0";
+                if (isset($youtube_json["feed"]["entry"])) {
+                    $youtube_videos = array();
+                    foreach ($youtube_json["feed"]["entry"] as $video_result) {
+                        $youtube_video = array();
+                        $youtube_video["Title"] = $video_result["title"]["\$t"];
+                        $youtube_video["Link"] = $video_result["link"][0]["href"];
+                        
+                        if (isset($video_result["gd\$comments"])) {
+                            $youtube_video["Comments"] = $video_result["gd\$comments"]["gd\$feedLink"]["countHint"];
+                        } else {
+                            $youtube_video["Comments"] = "0";
+                        }
+                        
+                        $youtube_video["Thumbnail"] = $video_result["media\$group"]["media\$thumbnail"][0]["url"];
+                        $youtube_video["Duration"] = Utilities::convertToHMS($video_result["media\$group"]["yt\$duration"]["seconds"]);
+                        
+                        $youtube_videos[] = $youtube_video;
                     }
                     
-                    $youtube_video["Thumbnail"] = $video_result["media\$group"]["media\$thumbnail"][0]["url"];
-                    $youtube_video["Duration"] = Utilities::convertToHMS($video_result["media\$group"]["yt\$duration"]["seconds"]);
-                    
-                    $youtube_videos[] = $youtube_video;
+                    return $youtube_videos;
+                } else {
+                    return array();
                 }
-                
-                return $youtube_videos;
             }
         } else {
             return array();
