@@ -76,13 +76,11 @@ class Podcast
         return $authors; 
     }
     
-    public function addEpisode($number, \DateTime $date, array $hosts, array $guests, array $sponsors, $youtube, $reddit)
+    public function addEpisode($number, array $hosts, array $guests, array $sponsors, $youtube, $reddit, $yt_api_key)
     {
         if ($this->getPrefix() == "") {
             throw new \Exception("The prefix must be set before adding an episode.");
         }
-        
-        $created = $date->format("Y-m-d");
         
         $hosts_list = array();
         foreach ($hosts as $host) {
@@ -99,16 +97,21 @@ class Podcast
             $sponsors_list[] = (int)$sponsor->getID();
         }
         
-        $youtube_data = file_get_contents("https://gdata.youtube.com/feeds/api/videos/$youtube?alt=json");
+        $youtube_data = file_get_contents("https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=$youtube&key=$yt_api_key");
         $youtube_json = json_decode($youtube_data, true);
         
-        $published = $youtube_json["entry"]["published"]["\$t"];
-        $duration = $youtube_json["entry"]["media\$group"]["yt\$duration"]["seconds"];
+        $published = $youtube_json["items"][0]["snippet"]["publishedAt"];
+	    $created = date("Y-m-d", strtotime($published));
+	    
+        $youtube_duration = $youtube_json["items"][0]["contentDetails"]["duration"];
+        $start = new \DateTime("@0"); // Unix epoch
+	    $start->add(new \DateInterval($youtube_duration));
+	    $duration = $start->format("U");
         
         try {
             $add_query = $this->_connection->prepare("INSERT INTO `episodes` (`Identifier`, `Number`, `Date`, `Hosts`, `Guests`, `Sponsors`, `YouTube Length`, `YouTube`, `Published`, `Reddit`) VALUES (:Identifier, :Number, :Date, :Hosts, :Guests, :Sponsors, :YouTubeLength, :YouTube, :Published, :Reddit)");
             
-            $add_query->bindValue(":Identifier", $this->getPrefix() . $number);
+            $add_query->bindValue(":Identifier", $this->getPrefix() . "_" . $number);
             $add_query->bindValue(":Number", $number);
             $add_query->bindValue(":Date", $created);
             $add_query->bindValue(":Hosts", json_encode($hosts_list));
