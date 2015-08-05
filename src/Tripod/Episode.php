@@ -121,7 +121,7 @@ class Episode
         try {
             $update_query = $this->_connection->prepare("UPDATE `episodes` SET {$field} = :Value WHERE `Identifier` = :Identifier");
             $update_query->bindValue(":Value", $value);
-            $update_query->bindValue(":ID", $this->getID(), \PDO::PARAM_INT);
+            $update_query->bindValue(":ID", $this->getIdentifier(), \PDO::PARAM_INT);
             $update_query->execute();
             
             $this->reloadData();
