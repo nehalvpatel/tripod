@@ -157,6 +157,16 @@ class Episode
         return $this->_setValue("Date", $date);
     }
     
+    public function getDescription()
+    {
+		return $this->_getValue("Description");
+    }
+    
+    public function setDescription($description)
+    {
+        return $this->_setValue("Description", $description);
+    }
+    
     public function getHosts()
     {
         return $this->_getValue("Hosts");
